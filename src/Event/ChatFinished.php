@@ -19,8 +19,11 @@ class ChatFinished extends Event
     /** @var Agent[] Agents list. See {@link Agent} for details. */
     public $agents;
 
-    /** @var string|null Preformatted chat listing */
+    /** @var string|null Preformatted html chat listing */
     public $html_messages;
+
+    /** @var string|null Preformatted plain chat listing */
+    public $plain_messages;
 
     /**
      * Setter for {@link agents} property.
