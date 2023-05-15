@@ -1,5 +1,5 @@
 {
-  "name": "olegf13/jivochat-webhooks-api",
+  "name": "chezrd/jivochat-webhooks-api",
   "description": "Library for Jivochat (Jivosite) Webhooks API integration.",
   "type": "library",
   "keywords": [
@@ -7,7 +7,7 @@
     "Jivosite",
     "Webhooks API"
   ],
-  "homepage": "https://github.com/Olegf13/jivochat-webhooks-api",
+  "homepage": "https://github.com/ChezRD/jivochat-webhooks-api",
   "license": "MIT",
   "authors": [
     {
@@ -15,16 +15,23 @@
       "email": "olegf39@gmail.com",
       "homepage": "https://github.com/Olegf13",
       "role": "Developer"
+    },
+    {
+      "name": "Evgeny Rumiantsev",
+      "email": "chezrd@gmail.com",
+      "homepage": "https://github.com/ChezRD",
+      "role": "Developer"
     }
   ],
   "support": {
-    "email": "olegf39@gmail.com",
-    "issues": "https://github.com/Olegf13/jivochat-webhooks-api/issues",
-    "source": "https://github.com/Olegf13/jivochat-webhooks-api",
-    "docs": "https://github.com/Olegf13/jivochat-webhooks-api"
+    "email": "chezrd@gmail.com",
+    "issues": "https://github.com/ChezRD/jivochat-webhooks-api/issues",
+    "source": "https://github.com/ChezRD/jivochat-webhooks-api",
+    "docs": "https://github.com/ChezRD/jivochat-webhooks-api"
   },
   "require": {
-    "php": ">=7.0.0"
+    "php": "^7.3 || ^8",
+    "doctrine/collections": "^1.8"
   },
   "require-dev": {
     "ext-pdo": "*",
@@ -42,7 +49,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Olegf13\\Jivochat\\Webhooks\\": "src/"
+      "ChezRD\\Jivochat\\Webhooks\\": "src/"
     }
   },
   "minimum-stability": "stable"

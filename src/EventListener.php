@@ -1,14 +1,15 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks;
+namespace ChezRD\Jivochat\Webhooks;
 
-use Olegf13\Jivochat\Webhooks\Event\Event;
-use Olegf13\Jivochat\Webhooks\Log\LogInterface;
+use ChezRD\Jivochat\Webhooks\Event\Event;
+use ChezRD\Jivochat\Webhooks\Log\LogInterface;
 
 /**
  * Webhooks API Event listener.
  *
- * @package Jivochat\Webhook
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks
  */
 class EventListener
 {

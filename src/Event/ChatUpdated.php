@@ -1,17 +1,18 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks\Event;
+namespace ChezRD\Jivochat\Webhooks\Event;
 
-use Olegf13\Jivochat\Webhooks\Request\Agent;
+use ChezRD\Jivochat\Webhooks\Request\Agent;
 
 /**
  * Class ChatUpdated
- * @package Olegf13\Jivochat\Webhooks\Event
+ * 
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @author Evgeny Rumiantsev <chezrd@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks\Event
  */
 class ChatUpdated extends Event
 {
-    /** @var int Chat id (e.g. 7180). */
-    public $chat_id;
     /** @var Agent Object with information about the operator. See {@link Agent} for details. */
     public $agent;
 
@@ -21,20 +22,7 @@ class ChatUpdated extends Event
      * @param Agent|array $data
      * @throws \InvalidArgumentException
      */
-    public function setAgent($data)
-    {
-        if (is_array($data)) {
-            $agent = new Agent();
-            $agent->populate($data);
-            $this->agent = $agent;
-            return;
-        }
-
-        if ($data instanceof Agent) {
-            $this->agent = $data;
-            return;
-        }
-
-        throw new \InvalidArgumentException('Invalid data given.');
+    public function setAgent($data) {
+        return $this->populateFieldData('agent', Agent::class, $data, false, true);
     }
 }

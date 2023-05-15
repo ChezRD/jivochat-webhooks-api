@@ -1,13 +1,17 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks\Request;
+namespace ChezRD\Jivochat\Webhooks\Request;
 
-use Olegf13\Jivochat\Webhooks\PopulateObjectViaArray;
+use ChezRD\Jivochat\Webhooks\PopulateObjectViaArray;
+use ChezRD\Jivochat\Webhooks\Request\Session\UtmJson;
+use ChezRD\Jivochat\Webhooks\Request\Session\GeoIP;
 
 /**
  * User session information (IP, "user agent" etc).
  *
- * @package Olegf13\Jivochat\Webhooks\Request
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @author Evgeny Rumiantsev <chezrd@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks\Request
  */
 class Session
 {
@@ -15,33 +19,36 @@ class Session
 
     /** @var GeoIP Data from geoip. See {@link GeoIP} for details. */
     public $geoip;
-    /** @var string|null utm (e.g. null). */
+
+    /** @var string|null utm (e.g. "campaign=(direct)|source=(direct)"). */
     public $utm;
+
+    /** @var UtmJson|null utm (e.g. {"campaign": "(direct)","source": "(direct)"}). */
+    public $utm_json;
+
     /** @var string IP address (e.g. "208.80.152.201"). */
     public $ip_addr;
+
     /** @var string User agent info. (e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36"). */
     public $user_agent;
 
     /**
      * Setter for {@link geoip} property.
      *
-     * @param GeoIP|array $data
+     * @param GeoIP|array|null $data
      * @throws \InvalidArgumentException
      */
-    public function setGeoip($data)
-    {
-        if (is_array($data)) {
-            $geoip = new GeoIP();
-            $geoip->populate($data);
-            $this->geoip = $geoip;
-            return;
-        }
+    public function setGeoip($data) {
+        return $this->populateFieldData('geoip', GeoIP::class, $data, false, true);
+    }
 
-        if ($data instanceof GeoIP) {
-            $this->geoip = $data;
-            return;
-        }
-
-        throw new \InvalidArgumentException('Invalid data given.');
+    /**
+     * Setter for {@link utm_json} property.
+     *
+     * @param UtmJson|array|null $data
+     * @throws \InvalidArgumentException
+     */
+    public function setUtmJson($data) {
+        return $this->populateFieldData('utm_json', UtmJson::class, $data, false, true);
     }
 }

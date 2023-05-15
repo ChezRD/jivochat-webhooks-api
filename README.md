@@ -1,7 +1,7 @@
 # Jivochat Webhooks API
 
-[![Latest Stable Version](https://poser.pugx.org/olegf13/jivochat-webhooks-api/v/stable)](https://packagist.org/packages/olegf13/jivochat-webhooks-api)
-[![License](https://poser.pugx.org/olegf13/jivochat-webhooks-api/license)](https://packagist.org/packages/olegf13/jivochat-webhooks-api)
+[![Latest Stable Version](https://poser.pugx.org/chezrd/jivochat-webhooks-api/v/stable)](https://packagist.org/packages/chezrd/jivochat-webhooks-api)
+[![License](https://poser.pugx.org/chezrd/jivochat-webhooks-api/license)](https://packagist.org/packages/chezrd/jivochat-webhooks-api)
 
 Library for [Jivochat](https://www.jivochat.com) ([Jivosite](https://www.jivosite.ru)) Webhooks API integration.
 
@@ -29,29 +29,33 @@ It is strongly recommended to have at least one of above loggers installed to ho
 The preferred way to install this library is through [Composer](http://getcomposer.org/download/). To install the latest version, run:
 
 ```
-composer require olegf13/jivochat-webhooks-api
+composer require chezrd/jivochat-webhooks-api
 ```
 
 ## Basic usage
 
 ```php
 <?php
-use Olegf13\Jivochat\Webhooks\Log\MySQLLog;
-use Olegf13\Jivochat\Webhooks\Event\Event;
+use ChezRD\Jivochat\Webhooks\Log\MySQLLog;
+use ChezRD\Jivochat\Webhooks\Event\Event;
+use ChezRD\Jivochat\Webhooks\Event\ChatAccepted;
+use ChezRD\Jivochat\Webhooks\Event\ChatFinished;
+use ChezRD\Jivochat\Webhooks\EventListener;
+use ChezRD\Jivochat\Webhooks\Response;
 
 // create MySQL logger
 $dbLogger = new MySQLLog(new PDO('mysql:dbname=test;host=127.0.0.1', 'root', 'root'));
 
 // create Callback API event listener
-$listener = new Olegf13\Jivochat\Webhooks\EventListener([$dbLogger]);
+$listener = new EventListener([$dbLogger]);
 
 // bind listener for `chat_accepted` event
-$listener->on(Event::EVENT_CHAT_ACCEPTED, function (Olegf13\Jivochat\Webhooks\Event\ChatAccepted $event) {
+$listener->on(Event::EVENT_CHAT_ACCEPTED, function (ChatAccepted $event) {
     // here you do your stuff - find user in your database, etc
     $user = User::getByEmail($event->visitor->email);
     
     // generate response on Callback API
-    $response = new Olegf13\Jivochat\Webhooks\Response();
+    $response = new Response();
     $response->setCRMLink(...);
     $response->setContactInfo(...);
     $response->setCustomData(...);
@@ -61,12 +65,12 @@ $listener->on(Event::EVENT_CHAT_ACCEPTED, function (Olegf13\Jivochat\Webhooks\Ev
 });
 
 // bind listener for `chat_accepted` event
-$listener->on(Event::EVENT_CHAT_FINISHED, function (Olegf13\Jivochat\Webhooks\Event\ChatFinished $event) {
+$listener->on(Event::EVENT_CHAT_FINISHED, function (ChatFinished $event) {
     /** @var int Timestamp of the chat's first message. */
     $chatBeginAt = $event->chat->messages[0]->timestamp;
     // ...
     
-    return new Olegf13\Jivochat\Webhooks\Response();
+    return new Response();
 });
 
 // execute event listener
@@ -83,4 +87,5 @@ This library is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
+Thanks to [original](https://github.com/Olegf13/jivochat-webhooks-api) Oleg Fedorov ([Olegf13](https://github.com/Olegf13)) library from 2017. 
 Thanks to [this](https://github.com/nabarabane/jivosite) Jivosite Webhook handler library. 

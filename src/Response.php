@@ -1,44 +1,80 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks;
+namespace ChezRD\Jivochat\Webhooks;
 
 /**
  * Class Response
  *
- * @package Jivochat\Webhook
- * @see https://www.jivochat.com/api/#webhooks
- * @see https://www.jivochat.com/api/#chat_accepted
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @author Evgeny Rumiantsev <chezrd@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks
+ * @see https://www.jivochat.com/docs/webhooks/#chat-accepted
+ * @see https://www.jivochat.com/docs/webhooks/#chat-updated
  */
 class Response
 {
     /**
      * @var array Additional info about the client.
-     * @see https://www.jivochat.com/api/#chat_accepted
-     * @see https://www.jivochat.com/api/#setcustomdata
+     * @see https://www.jivochat.com/docs/widget/#set-custom-data
+     * @see https://www.jivochat.com/docs/webhooks/#chat-accepted
+     * @see https://www.jivochat.com/docs/webhooks/#chat-updated
      */
     protected $custom_data = [];
+
     /**
      * @var array Contact info of the visitor.
-     * @see https://www.jivochat.com/api/#chat_accepted
-     * @see https://www.jivochat.com/api/#setcontactinfo
+     * @see https://www.jivochat.com/docs/widget/#set-contact-info
+     * @see https://www.jivochat.com/docs/webhooks/#chat-accepted
+     * @see https://www.jivochat.com/docs/webhooks/#chat-updated
      */
     protected $contact_info = [];
+
     /**
      * @var bool A flag that determines the operator to display the binding key visitor to the card in CRM.
      * The button is displayed in front of all fields custom_data.
-     * @see https://www.jivochat.com/api/#chat_accepted
+     * @see https://www.jivochat.com/docs/webhooks/#chat-accepted
+     * @see https://www.jivochat.com/docs/webhooks/#chat-updated
      */
     protected $enable_assign = false;
+
+    /**
+     * @var array Information about the page, where visitor currently is
+     * @see https://www.jivochat.com/docs/webhooks/#chat-accepted
+     * @see https://www.jivochat.com/docs/webhooks/#chat-updated
+     */
+    protected $page = [];
+
     /**
      * @var string|null Link to the client card in CRM.
      * Displays the operator a separate button under all fields custom_data.
-     * @see https://www.jivochat.com/api/#chat_accepted
+     * @see https://www.jivochat.com/docs/webhooks/#chat-accepted
      */
     protected $crm_link;
+
     /**
      * @var string JSON representation of Callback response data.
      */
     protected $response;
+
+    /**
+     * Setter for {@link page}.
+     *
+     * @param string $title Title shown above a data field.
+     * @param string $content Content of data field. Tags will be insulated.
+     * @param string|null $link URL that opens when you click on a data field.
+     * @param string|null $key Description of the data field, bold text before a colon.
+     */
+    public function setPage(string $url, string $title = null) {
+        $data = [
+            'url' => $url,
+        ];
+
+        if (null !== $title) {
+            $data['title'] = $title;
+        }
+
+        $this->page = $data;
+    }
 
     /**
      * Setter for {@link custom_data}.
@@ -48,8 +84,7 @@ class Response
      * @param string|null $link URL that opens when you click on a data field.
      * @param string|null $key Description of the data field, bold text before a colon.
      */
-    public function setCustomData(string $title, string $content, string $link = null, string $key = null)
-    {
+    public function setCustomData(string $title, string $content, string $link = null, string $key = null) {
         $data = [
             'title' => $title,
             'content' => $content,
@@ -72,8 +107,7 @@ class Response
      * @param string|null $phone Client phone number.
      * @param string|null $description Additional information about the client.
      */
-    public function setContactInfo(string $name = null, string $email = null, string $phone = null, string $description = null)
-    {
+    public function setContactInfo(string $name = null, string $email = null, string $phone = null, string $description = null) {
         $contactInfo = [];
         if (null !== $name) {
             $contactInfo['name'] = $name;
@@ -100,8 +134,7 @@ class Response
      *
      * @param bool $value
      */
-    public function setEnableAssign(bool $value)
-    {
+    public function setEnableAssign(bool $value) {
         $this->enable_assign = $value;
     }
 
@@ -110,8 +143,7 @@ class Response
      *
      * @param string $link
      */
-    public function setCRMLink(string $link)
-    {
+    public function setCRMLink(string $link) {
         $this->crm_link = $link;
     }
 
@@ -120,8 +152,7 @@ class Response
      *
      * @return array
      */
-    public function getCustomData(): array
-    {
+    public function getCustomData(): array {
         return $this->custom_data;
     }
 
@@ -130,8 +161,7 @@ class Response
      *
      * @return array
      */
-    public function getContactInfo(): array
-    {
+    public function getContactInfo(): array {
         return $this->contact_info;
     }
 
@@ -140,8 +170,7 @@ class Response
      *
      * @return bool
      */
-    public function isEnableAssign(): bool
-    {
+    public function isEnableAssign(): bool {
         return $this->enable_assign;
     }
 
@@ -150,9 +179,17 @@ class Response
      *
      * @return null|string
      */
-    public function getCrmLink()
-    {
+    public function getCrmLink() {
         return $this->crm_link;
+    }
+
+    /**
+     * Getter for {@link page}.
+     *
+     * @return array
+     */
+    public function getPage() {
+        return $this->page;
     }
 
     /**
@@ -161,8 +198,7 @@ class Response
      * @return string Webhook response JSON string.
      * @throws \RuntimeException
      */
-    public function getResponse(): string
-    {
+    public function getResponse(): string {
         $this->buildResponse();
 
         return $this->response;
@@ -173,25 +209,36 @@ class Response
      *
      * @throws \RuntimeException in case if error occurs during encoding response to JSON.
      */
-    protected function buildResponse()
-    {
+    protected function buildResponse() {
         $response = [
             'result' => 'ok',
         ];
-        if (!empty($this->custom_data) || !empty($this->contact_info) || !empty($this->crm_link)) {
+        
+        if (!empty($this->custom_data) || !empty($this->contact_info) || !empty($this->crm_link) || !empty($this->page)) {
             $response = [
                 'result' => 'ok',
-                'custom_data' => $this->custom_data,
-                'contact_info' => $this->contact_info,
                 'enable_assign' => $this->enable_assign,
             ];
 
             if (null !== $this->crm_link) {
                 $response['crm_link'] = $this->crm_link;
             }
+            
+            if (!empty($this->contact_info)) {
+                $response['contact_info'] = $this->contact_info;
+            }
+            
+            if (!empty($this->custom_data)) {
+                $response['custom_data'] = $this->custom_data;
+            }
+
+            if (!empty($this->page)) {
+                $response['page'] = $this->page;
+            }
         }
 
         $encodedResponse = json_encode($response, JSON_UNESCAPED_UNICODE);
+
         if (false === $encodedResponse) {
             $errorCode = json_last_error();
             $errorMsg = json_last_error_msg();

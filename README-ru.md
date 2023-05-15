@@ -15,7 +15,7 @@ For English documentation see [README.md](README.md).
 Для установки библиотеки в командной строке введите:
 
 ```
-composer require olegf13/jivochat-webhooks-api": "*"
+composer require chezrd/jivochat-webhooks-api": "*"
 ```
 
 либо добавьте следующую строку в файл `composer.json`:
@@ -23,7 +23,7 @@ composer require olegf13/jivochat-webhooks-api": "*"
 ```json
 {
     "require": {
-        "olegf13/jivochat-webhooks-api": "*"
+        "chezrd/jivochat-webhooks-api": "*"
     }
 }
 ```

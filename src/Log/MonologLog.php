@@ -1,13 +1,15 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks\Log;
+namespace ChezRD\Jivochat\Webhooks\Log;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 /**
  * Class MonologLog
- * @package Olegf13\Jivochat\Webhooks\Log
+ * 
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks\Log
  */
 class MonologLog implements LogInterface
 {

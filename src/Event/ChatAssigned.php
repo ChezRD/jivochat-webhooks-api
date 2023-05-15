@@ -1,8 +1,8 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks\Event;
+namespace ChezRD\Jivochat\Webhooks\Event;
 
-use Olegf13\Jivochat\Webhooks\Request\Agent;
+use ChezRD\Jivochat\Webhooks\Request\Agent;
 
 /**
  * Class ChatAssigned
@@ -13,15 +13,16 @@ use Olegf13\Jivochat\Webhooks\Request\Agent;
  * Also parameters including visitor's id if it was sent to the widget using `jivo_api.setUserToken`.
  *
  * In response we expect only `{"result": "ok or an error message"}`.
- *
- * @package Olegf13\Jivochat\Webhooks\Event
+ * 
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @author Evgeny Rumiantsev <chezrd@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks\Event
  */
 class ChatAssigned extends Event
 {
-    /** @var int Chat id (e.g. 7180). */
-    public $chat_id;
     /** @var Agent Object with information about the operator. See {@link Agent} for details. */
-    public $agent;
+    public $assigned_agent;
+
     /** @var string CRM link from the event Chat_accepted (e.g. "..."). */
     public $assign_to;
 
@@ -31,20 +32,7 @@ class ChatAssigned extends Event
      * @param Agent|array $data
      * @throws \InvalidArgumentException
      */
-    public function setAgent($data)
-    {
-        if (is_array($data)) {
-            $agent = new Agent();
-            $agent->populate($data);
-            $this->agent = $agent;
-            return;
-        }
-
-        if ($data instanceof Agent) {
-            $this->agent = $data;
-            return;
-        }
-
-        throw new \InvalidArgumentException('Invalid data given.');
+    public function setAssignedAgent($data) {
+        return $this->populateFieldData('assigned_agent', Agent::class, $data, false, true);
     }
 }

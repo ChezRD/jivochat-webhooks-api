@@ -1,22 +1,26 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks\Event;
+namespace ChezRD\Jivochat\Webhooks\Event;
 
-use Olegf13\Jivochat\Webhooks\Request\Agent;
-use Olegf13\Jivochat\Webhooks\Request\Chat;
+use ChezRD\Jivochat\Webhooks\Request\Agent;
+use ChezRD\Jivochat\Webhooks\Request\Chat;
 
 /**
  * Class ChatFinished
- * @package Olegf13\Jivochat\Webhooks\Event
+ * 
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks\Event
  */
 class ChatFinished extends Event
 {
-    /** @var int Chat id (e.g. 7180). */
-    public $chat_id;
     /** @var Chat Data on completed chatting. See {@link Chat} for details. */
     public $chat;
+
     /** @var Agent[] Agents list. See {@link Agent} for details. */
     public $agents;
+
+    /** @var string|null Preformatted chat listing */
+    public $html_messages;
 
     /**
      * Setter for {@link agents} property.
@@ -24,26 +28,8 @@ class ChatFinished extends Event
      * @param array $agents
      * @throws \InvalidArgumentException
      */
-    public function setAgents(array $agents)
-    {
-        /** @var Agent $agent */
-        foreach ($agents as $data) {
-            if (!is_array($data) && !($data instanceof Agent)) {
-                throw new \InvalidArgumentException('Invalid data given.');
-            }
-
-            if (is_array($data)) {
-                $agent = new Agent();
-                $agent->populate($data);
-                $this->agents[] = $agent;
-                continue;
-            }
-
-            if ($data instanceof Agent) {
-                $this->agents[] = $data;
-                continue;
-            }
-        }
+    public function setAgents(array $data) {
+        return $this->populateFieldData('agents', Agent::class, $data, true, false);
     }
 
     /**
@@ -52,20 +38,7 @@ class ChatFinished extends Event
      * @param Agent|array $data
      * @throws \InvalidArgumentException
      */
-    public function setChat($data)
-    {
-        if (is_array($data)) {
-            $chat = new Chat();
-            $chat->populate($data);
-            $this->chat = $chat;
-            return;
-        }
-
-        if ($data instanceof Chat) {
-            $this->chat = $data;
-            return;
-        }
-
-        throw new \InvalidArgumentException('Invalid data given.');
+    public function setChat($data) {
+        return $this->populateFieldData('chat', Chat::class, $data, false, true);
     }
 }

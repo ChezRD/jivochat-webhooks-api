@@ -1,11 +1,12 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks\Log;
+namespace ChezRD\Jivochat\Webhooks\Log;
 
 /**
  * Class MySQLLog
  *
- * @package Olegf13\Jivochat\Webhooks\Log
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks\Log
  */
 class MySQLLog implements LogInterface
 {

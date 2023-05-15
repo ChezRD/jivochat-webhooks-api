@@ -1,15 +1,18 @@
 <?php
 
-namespace Olegf13\Jivochat\Webhooks\Event;
+namespace ChezRD\Jivochat\Webhooks\Event;
 
 /**
  * Class OfflineMessage
- * @package Olegf13\Jivochat\Webhooks\Event
+ * 
+ * @author Oleg Fedorov <olegf39@gmail.com>
+ * @package ChezRD\Jivochat\Webhooks\Event
  */
 class OfflineMessage extends Event
 {
-    /** @var string Offline message ID (e.g. "2614"). */
+    /** @var int Offline message ID (e.g. 1665399500726). */
     public $offline_message_id;
+
     /** @var string Message (e.g. "Message text"). */
     public $message;
 }
