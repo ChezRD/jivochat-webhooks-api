@@ -36,12 +36,15 @@ composer require chezrd/jivochat-webhooks-api
 
 ```php
 <?php
+
 use ChezRD\Jivochat\Webhooks\Log\MySQLLog;
-use ChezRD\Jivochat\Webhooks\Event\Event;
-use ChezRD\Jivochat\Webhooks\Event\ChatAccepted;
-use ChezRD\Jivochat\Webhooks\Event\ChatFinished;
+use ChezRD\Jivochat\Webhooks\Event;
 use ChezRD\Jivochat\Webhooks\EventListener;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatAcceptedRequest;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatFinishedRequest;
 use ChezRD\Jivochat\Webhooks\Response;
+use ChezRD\Jivochat\Webhooks\Response\SuccessResponse;
+use ChezRD\Jivochat\Webhooks\Response\UpdateResponse;
 
 // create MySQL logger
 $dbLogger = new MySQLLog(new PDO('mysql:dbname=test;host=127.0.0.1', 'root', 'root'));
@@ -50,12 +53,12 @@ $dbLogger = new MySQLLog(new PDO('mysql:dbname=test;host=127.0.0.1', 'root', 'ro
 $listener = new EventListener([$dbLogger]);
 
 // bind listener for `chat_accepted` event
-$listener->on(Event::EVENT_CHAT_ACCEPTED, function (ChatAccepted $event) {
+$listener->on(Event::EVENT_CHAT_ACCEPTED, function (ChatAcceptedRequest $request): Response {
     // here you do your stuff - find user in your database, etc
-    $user = User::getByEmail($event->visitor->email);
+    $user = User::getByEmail($request->visitor->email);
     
     // generate response on Callback API
-    $response = new Response();
+    $response = new UpdateResponse();
     $response->setCRMLink(...);
     $response->setContactInfo(...);
     $response->setCustomData(...);
@@ -65,12 +68,12 @@ $listener->on(Event::EVENT_CHAT_ACCEPTED, function (ChatAccepted $event) {
 });
 
 // bind listener for `chat_accepted` event
-$listener->on(Event::EVENT_CHAT_FINISHED, function (ChatFinished $event) {
+$listener->on(Event::EVENT_CHAT_FINISHED, function (ChatFinishedRequest $request): Response {
     /** @var int Timestamp of the chat's first message. */
-    $chatBeginAt = $event->chat->messages[0]->timestamp;
+    $chatBeginAt = $request->chat->messages[0]->timestamp;
     // ...
     
-    return new Response();
+    return new SuccessResponse();
 });
 
 // execute event listener

@@ -2,10 +2,15 @@
 
 namespace ChezRD\Jivochat\Webhooks\Event;
 
-use ChezRD\Jivochat\Webhooks\Request\Agent;
+use ChezRD\Jivochat\Webhooks\Event;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatUpdatedRequest;
 
 /**
  * Class ChatUpdated
+ * 
+ * The event is sent when a visitor's information has been updated - for example, a visitor has filled the contacts form in the chat. 
+ * All known data about visitor is sent in the request parameters along with the information about the agent who accepted the chat. 
+ * Also there may be visitor's ID if it was sent to the widget using setUserToken method.
  * 
  * @author Oleg Fedorov <olegf39@gmail.com>
  * @author Evgeny Rumiantsev <chezrd@gmail.com>
@@ -13,16 +18,5 @@ use ChezRD\Jivochat\Webhooks\Request\Agent;
  */
 class ChatUpdated extends Event
 {
-    /** @var Agent Object with information about the operator. See {@link Agent} for details. */
-    public $agent;
-
-    /**
-     * Setter for {@link agent} property.
-     *
-     * @param Agent|array $data
-     * @throws \InvalidArgumentException
-     */
-    public function setAgent($data) {
-        return $this->populateFieldData('agent', Agent::class, $data, false, true);
-    }
+    public ChatUpdatedRequest $request;
 }

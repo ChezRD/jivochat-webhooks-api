@@ -2,7 +2,8 @@
 
 namespace ChezRD\Jivochat\Webhooks\Event;
 
-use ChezRD\Jivochat\Webhooks\Request\Agent;
+use ChezRD\Jivochat\Webhooks\Event;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatAcceptedRequest;
 
 /**
  * Class ChatAccepted
@@ -17,35 +18,10 @@ use ChezRD\Jivochat\Webhooks\Request\Agent;
  * It's also will be saved in the archive and email with the chat log.
  *
  * @author Oleg Fedorov <olegf39@gmail.com>
+ * @author Evgeny Rumiantsev <chezrd@gmail.com>
  * @package ChezRD\Jivochat\Webhooks\Event
  */
 class ChatAccepted extends Event
 {
-    /** @var int Chat id (e.g. 7180). */
-    public $chat_id;
-    /** @var Agent Object with information about the operator. See {@link Agent} for details. */
-    public $agent;
-
-    /**
-     * Setter for {@link agent} property.
-     *
-     * @param Agent|array $data
-     * @throws \InvalidArgumentException
-     */
-    public function setAgent($data)
-    {
-        if (is_array($data)) {
-            $agent = new Agent();
-            $agent->populate($data);
-            $this->agent = $agent;
-            return;
-        }
-
-        if ($data instanceof Agent) {
-            $this->agent = $data;
-            return;
-        }
-
-        throw new \InvalidArgumentException('Invalid data given.');
-    }
+    public ChatAcceptedRequest $request;
 }

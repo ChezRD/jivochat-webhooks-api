@@ -2,8 +2,9 @@
 
 namespace ChezRD\Jivochat\Webhooks;
 
-use ChezRD\Jivochat\Webhooks\Event\Event;
+use ChezRD\Jivochat\Webhooks\Event;
 use ChezRD\Jivochat\Webhooks\Log\LogInterface;
+use ChezRD\Jivochat\Webhooks\Response\SuccessResponse;
 
 /**
  * Webhooks API Event listener.
@@ -100,14 +101,17 @@ class EventListener
         $event = Event::create($requestData);
 
         // if no handler is registered on current event, respond with a default response
-        if (!array_key_exists($event->event_name, $this->listeners)) {
-            $this->respond(new Response());
+        if (!array_key_exists($event->getRequest()->event_name, $this->listeners)) {
+            $this->respond(new SuccessResponse());
         }
+        
+        $request = $event->getRequest();
 
         /** @var Response $response */
-        $response = call_user_func($this->listeners[$event->event_name], $event);
-        if (!($response instanceof Response)) {
-            throw new \LogicException("Registered handler for `{$event->event_name}` event returned invalid response.");
+        $response = call_user_func($this->listeners[$request->event_name], $request);
+
+        if (!(is_a($response, Response::class))) {
+            throw new \LogicException("Registered handler for `{$request->event_name}` event returned invalid response.");
         }
 
         $this->respond($response);

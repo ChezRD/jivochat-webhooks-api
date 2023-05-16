@@ -1,18 +1,24 @@
 <?php
 
-namespace ChezRD\Jivochat\Webhooks\Event;
+namespace ChezRD\Jivochat\Webhooks;
 
-use ChezRD\Jivochat\Webhooks\PopulateObjectViaArray;
-use ChezRD\Jivochat\Webhooks\Request\Agent;
-use ChezRD\Jivochat\Webhooks\Request\Page;
-use ChezRD\Jivochat\Webhooks\Request\Session;
-use ChezRD\Jivochat\Webhooks\Request\Visitor;
-use ChezRD\Jivochat\Webhooks\Request\Analytics;
-use ChezRD\Jivochat\Webhooks\Request\Department;
-use ChezRD\Jivochat\Webhooks\Request\Organization;
-use ChezRD\Jivochat\Webhooks\Request\Status;
-use ChezRD\Jivochat\Webhooks\Request\Tag;
+use ChezRD\Jivochat\Webhooks\Event\CallEvent;
+use ChezRD\Jivochat\Webhooks\Event\ChatAccepted;
+use ChezRD\Jivochat\Webhooks\Event\ChatAssigned;
+use ChezRD\Jivochat\Webhooks\Event\ChatFinished;
+use ChezRD\Jivochat\Webhooks\Event\ChatUpdated;
+use ChezRD\Jivochat\Webhooks\Event\ClientUpdated;
+use ChezRD\Jivochat\Webhooks\Event\OfflineMessage;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\CallEventRequest;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatAcceptedRequest;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatAssignedRequest;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatFinishedRequest;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatUpdatedRequest;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ClientUpdatedRequest;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\OfflineMessageRequest;
+use ChezRD\Jivochat\Webhooks\Model\Request;
 use InvalidArgumentException;
+use ReturnTypeWillChange;
 
 /**
  * Class Event
@@ -23,8 +29,6 @@ use InvalidArgumentException;
  */
 abstract class Event
 {
-    use PopulateObjectViaArray;
-
     /**
      * Event will be sent when agent clicks 'Reply'.
      *
@@ -104,53 +108,22 @@ abstract class Event
         self::EVENT_CLIENT_UPDATED,
     ];
 
-    /** @var string Type of event (e.g. "chat_accepted"). See {@link EventListener::EVENTS} for available values. */
-    public $event_name;
+    /** @var Request Structured data from current request */
+    protected Request $request;
 
-    /** @var string Channel widget ID, it can be found in the chat code (e.g. "3948"). */
-    public $widget_id;
-
-    /** @var int ID of current chat (e.g. 7507). */
-    public $chat_id;
-
-    /** @var Visitor Object with information about the visitor. See {@link Visitor} for details. */
-    public $visitor;
-
-    /** @var Session Information on user sessions. See {@link Session} for details. */
-    public $session;
-
-    /** @var string|null Visitor id (e.g. "3c077929b8_12175"). */
-    public $user_token;
-
-    /** @var Page|null Information about a page on which the visitor. See {@link Page} for details. */
-    public $page;
-
-    /** @var Analytics|null Available client identificators in Google Analytics or Yandex.Metrika. See {@link Analytics} for details. */
-    public $analytics;
-
-    /** @var Department|null Object with the information about the department that visitor selected before chat. See {@link Department} for details. */
-    public $department;
-
-    /** @var Organization|null Object with the information about an organization, client was assigned. See {@link Organization} for details. */
-    public $organization;
-
-    /** @var Agent|null Information about an agent assigned to the client */
-    public $assigned_agent;
-
-    /** @var Tag[]|null Tags selected for the client */
-    public $tags;
-
-    /** @var Status|null Tags selected for the client */
-    public $status;
+    #[ReturnTypeWillChange]
+    public function getRequest(): Request {
+        return $this->request;
+    }
 
     /**
      * Event constructor.
      *
-     * @param array $requestData
+     * @param Request $request
      */
-    final protected function __construct(array $requestData)
+    final protected function __construct(Request $request)
     {
-        $this->populate($requestData);
+        $this->request = $request;
     }
 
     /**
@@ -184,119 +157,29 @@ abstract class Event
 
         switch ($eventName) {
             case static::EVENT_CALL_EVENT:
-                return new CallEvent($decodedRequest);
+                return new CallEvent(new CallEventRequest($decodedRequest));
                 break;
             case static::EVENT_CLIENT_UPDATED:
-                return new ClientUpdated($decodedRequest);
+                return new ClientUpdated(new ClientUpdatedRequest($decodedRequest));
                 break;
             case static::EVENT_CHAT_ACCEPTED:
-                return new ChatAccepted($decodedRequest);
+                return new ChatAccepted(new ChatAcceptedRequest($decodedRequest));
                 break;
             case static::EVENT_CHAT_ASSIGNED:
-                return new ChatAssigned($decodedRequest);
+                return new ChatAssigned(new ChatAssignedRequest($decodedRequest));
                 break;
             case static::EVENT_CHAT_UPDATED:
-                return new ChatUpdated($decodedRequest);
+                return new ChatUpdated(new ChatUpdatedRequest($decodedRequest));
                 break;
             case static::EVENT_CHAT_FINISHED:
-                return new ChatFinished($decodedRequest);
+                return new ChatFinished(new ChatFinishedRequest($decodedRequest));
                 break;
             case static::EVENT_OFFLINE_MESSAGE:
-                return new OfflineMessage($decodedRequest);
+                return new OfflineMessage(new OfflineMessageRequest($decodedRequest));
                 break;
             default:
-                throw new \LogicException("Class for event name `{$eventName}` is not implemented.");
+                throw new \LogicException("Request class for event name `{$eventName}` is not implemented.");
                 break;
         }
     }
-
-    /**
-     * Setter for {@link visitor} property.
-     *
-     * @param Visitor|array $data
-     * @throws InvalidArgumentException
-     */
-    public function setVisitor($data) {
-        return $this->populateFieldData('visitor', Visitor::class, $data, false, false);
-    }
-
-    /**
-     * Setter for {@link session} property.
-     *
-     * @param Session|array $data
-     * @throws InvalidArgumentException
-     */
-    public function setSession($data) {
-        return $this->populateFieldData('session', Session::class, $data, false, false);
-    }
-
-    /**
-     * Setter for {@link page} property.
-     *
-     * @param Visitor|array|null $data
-     * @throws InvalidArgumentException
-     */
-    public function setPage($data) {
-        return $this->populateFieldData('page', Page::class, $data, false, true);
-    }
-
-    /**
-     * Setter for {@link assigned_agent} property.
-     *
-     * @param Agent|array|null $data
-     * @throws InvalidArgumentException
-     */
-    public function setAssignedAgent($data) {
-        return $this->populateFieldData('assigned_agent', Agent::class, $data, true);
-    }
-
-    /**
-     * Setter for {@link tags} property.
-     *
-     * @param Tag[]|array|null $data
-     * @throws InvalidArgumentException
-     */
-    public function setTags($data) {
-        return $this->populateFieldData('tags', Tag::class, $data, true, true);
-    }
-
-    /**
-     * Setter for {@link analytics} property.
-     *
-     * @param Analytics|array|null $data
-     * @throws InvalidArgumentException
-     */
-    public function setAnalytics($data) {
-        return $this->populateFieldData('analytics', Analytics::class, $data, false, true);
-    }
-
-    /**
-     * Setter for {@link organization} property.
-     *
-     * @param Organization|array|null $data
-     * @throws InvalidArgumentException
-     */
-    public function setOrganization($data) {
-        return $this->populateFieldData('organization', Organization::class, $data, false, true);
-    }
-
-    /**
-     * Setter for {@link department} property.
-     *
-     * @param Department|array|null $data
-     * @throws InvalidArgumentException
-     */
-    public function setDepartment($data) {
-        return $this->populateFieldData('department', Department::class, $data, false, true);
-    }
-
-    /**
-     * Setter for {@link status} property.
-     *
-     * @param Status|array|null $data
-     * @throws InvalidArgumentException
-     */
-    public function setStatus($data) {
-        return $this->populateFieldData('status', Status::class, $data, false, true);
-    }   
 }

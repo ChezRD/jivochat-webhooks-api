@@ -2,7 +2,8 @@
 
 namespace ChezRD\Jivochat\Webhooks\Event;
 
-use ChezRD\Jivochat\Webhooks\Request\Agent;
+use ChezRD\Jivochat\Webhooks\Event;
+use ChezRD\Jivochat\Webhooks\Model\EventRequest\ChatAssignedRequest;
 
 /**
  * Class ChatAssigned
@@ -20,19 +21,5 @@ use ChezRD\Jivochat\Webhooks\Request\Agent;
  */
 class ChatAssigned extends Event
 {
-    /** @var Agent Object with information about the operator. See {@link Agent} for details. */
-    public $assigned_agent;
-
-    /** @var string CRM link from the event Chat_accepted (e.g. "..."). */
-    public $assign_to;
-
-    /**
-     * Setter for {@link agent} property.
-     *
-     * @param Agent|array $data
-     * @throws \InvalidArgumentException
-     */
-    public function setAssignedAgent($data) {
-        return $this->populateFieldData('assigned_agent', Agent::class, $data, false, true);
-    }
+    public ChatAssignedRequest $request;
 }

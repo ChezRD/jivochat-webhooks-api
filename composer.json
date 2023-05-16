@@ -31,15 +31,13 @@
   },
   "require": {
     "php": "^7.3 || ^8",
-    "doctrine/collections": "^1.8"
+    "chezrd/jivochat-webhooks-model": "^1.0"
   },
   "require-dev": {
     "ext-pdo": "*",
     "monolog/monolog": "1.9.*",
     "ext-mongodb": "*",
-    "mongodb/mongodb": "1.1.*",
-    "phpunit/phpunit": "~6.1",
-    "fzaninotto/faker": "^1.6"
+    "mongodb/mongodb": "1.1.*"
   },
   "suggest": {
     "ext-pdo": "Allow logging of Webhooks requests/response data to a MySQL server",
