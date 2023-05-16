@@ -109,7 +109,7 @@ abstract class Event
     ];
 
     /** @var Request Structured data from current request */
-    protected Request $request;
+    private Request $request;
 
     #[ReturnTypeWillChange]
     public function getRequest(): Request {
